@@ -1,4 +1,4 @@
-from flask import Flask, Response
+from flask import Flask, Response, send_file
 from avro_util import gen_avro
 from os import urandom, SEEK_SET
 import fastavro
@@ -44,6 +44,16 @@ def get_avro():
     buf = io.BytesIO()
     fastavro.writer(buf, schema, records)
     return Response(buf.getvalue(), mimetype='application/octet-stream')
+
+@app.route('/ccc.avro')
+def send_file_avro():
+    schema, records = get_data()
+    buf = io.BytesIO()
+    fastavro.writer(buf, schema, records)
+    buf.seek(0)
+    return send_file(buf, 
+                        attachment_filename='ccc.avro',
+                        mimetype='application/octet-stream')
 
 if __name__ == '__main__':
     app.run(debug=True)
